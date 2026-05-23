@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/expenses")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174", "http://localhost:5175"})
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174", "http://localhost:5175","https://smart-expense-tracker-2e5eak46q-brindha-s-projects1.vercel.app"})
 public class ExpenseController {
 
     private final ExpenseService expenseService;

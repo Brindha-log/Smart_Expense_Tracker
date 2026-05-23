@@ -18,7 +18,7 @@ import java.util.Map;
         "http://localhost:5173",
         "http://localhost:5174",
         "http://localhost:5175",
-        "https://smart-expense-tracker-1qvabe3am-brindha-s-projects1.vercel.app"
+        "https://smart-expense-tracker-2e5eak46q-brindha-s-projects1.vercel.app"
 })
 public class AuthController {
 
