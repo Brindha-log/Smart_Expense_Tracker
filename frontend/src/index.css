@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f8fafc; /* Matches slate-50 background perfectly */
+  color: #0f172a;            /* Matches slate-900 typography default */
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom premium scrollbar styling for data-heavy charts and tables */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e2e8f0; /* slate-200 */
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1; /* slate-300 */
+}
+
+/* Premium selection highlight matching the Navy theme */
+::selection {
+  background-color: #0f172a; /* slate-900 */
+  color: #ffffff;
+}
