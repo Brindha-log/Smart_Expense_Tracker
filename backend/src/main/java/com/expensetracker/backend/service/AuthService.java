@@ -4,6 +4,8 @@ import com.expensetracker.backend.dto.RegisterRequest;
 import com.expensetracker.backend.dto.LoginRequest;
 import com.expensetracker.backend.entity.User;
 import com.expensetracker.backend.repository.UserRepository;
+import com.expensetracker.backend.security.JwtService;
+import com.expensetracker.backend.service.OtpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,8 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final OtpService otpService;
 
     public String register(RegisterRequest request) {
 
@@ -34,25 +38,65 @@ public class AuthService {
         return "User Registered Successfully";
     }
 
-    // CHANGED: Method renamed to 'authenticate' and return type changed to boolean
-    public boolean authenticate(LoginRequest request) {
-
-        // 1. Find user by email from the database
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElse(null);
-
-        // If user is not found, return false (authentication failed)
+    public String authenticateAndGetToken(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
         if (user == null) {
-            return false;
+            return null;
         }
+        boolean passwordMatches = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        if (passwordMatches) {
+            return jwtService.generateToken(user.getEmail());
+        }
+        return null;
+    }
 
-        // 2. Check if the raw password matches the hashed password from the database
-        boolean passwordMatches = passwordEncoder.matches(
-                request.getPassword(),
-                user.getPassword()
-        );
+    public void changePassword(String email, String oldPassword, String newPassword, String otpCode) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("Incorrect old password");
+        }
+        
+        if (!otpService.verifyOtp(email, otpCode)) {
+            throw new RuntimeException("Invalid or expired OTP");
+        }
+        
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 
-        // Returns true if passwords match, false if they do not
-        return passwordMatches;
+    public void resetPassword(String email, String newPassword, String otpCode) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        
+        if (!otpService.verifyOtp(email, otpCode)) {
+            throw new RuntimeException("Invalid or expired OTP");
+        }
+        
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        
+        // Single use enforcement
+        otpService.clearOtp(email);
+    }
+
+    public String updateEmail(String currentEmail, String newEmail, String password, String otpCode) {
+        User user = userRepository.findByEmail(currentEmail).orElseThrow(() -> new RuntimeException("User not found"));
+        
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Incorrect password");
+        }
+        
+        if (userRepository.findByEmail(newEmail).isPresent()) {
+            throw new RuntimeException("Email is already in use");
+        }
+        
+        if (!otpService.verifyOtp(newEmail, otpCode)) {
+            throw new RuntimeException("Invalid or expired OTP for new email");
+        }
+        
+        user.setEmail(newEmail);
+        userRepository.save(user);
+        
+        return jwtService.generateToken(newEmail);
     }
 }

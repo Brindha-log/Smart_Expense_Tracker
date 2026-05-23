@@ -16,15 +16,26 @@ public class User {
 
     private String password;
 
+    private Double monthlyIncome = 0.0;
+
+    private String profileImage;
+
+    private String phoneNumber;
+
+    private String currency = "INR";
+
+    private java.time.LocalDate joinedDate;
+
     public User() {
+        this.joinedDate = java.time.LocalDate.now();
     }
 
     public User(String name, String email, String password) {
-
         this.name = name;
         this.email = email;
         this.password = password;
-
+        this.joinedDate = java.time.LocalDate.now();
+        this.currency = "INR";
     }
 
     public Long getId() {
@@ -53,5 +64,45 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Double getMonthlyIncome() {
+        return monthlyIncome;
+    }
+
+    public void setMonthlyIncome(Double monthlyIncome) {
+        this.monthlyIncome = monthlyIncome;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public java.time.LocalDate getJoinedDate() {
+        return joinedDate;
+    }
+
+    public void setJoinedDate(java.time.LocalDate joinedDate) {
+        this.joinedDate = joinedDate;
     }
 }

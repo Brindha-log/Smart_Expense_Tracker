@@ -47,8 +47,15 @@ export const handleLoginSubmit = async ({
       return; 
     }
 
-   
-    setSuccessMessage(response.data);
+    // The backend now returns the JWT token string
+    const token = response.data;
+    if (typeof token === 'string' && token.length > 50) {
+        localStorage.setItem('jwt_token', token);
+        localStorage.setItem('registeredUser', formData.email); // keep for legacy checks
+        setSuccessMessage(`Login successful! Welcome back.`);
+    } else {
+        throw new Error("Invalid token received");
+    }
 
   } catch (error: any) {
    

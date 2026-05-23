@@ -1,6 +1,5 @@
 import React from 'react';
-import axios from "axios";
-// import type { User } from '../types/users';
+import axios, { isAxiosError } from "axios";
 
 interface SubmitLogicProps {
   event: React.FormEvent<HTMLFormElement>;
@@ -21,10 +20,9 @@ export const handleRegistrationSubmit = async ({
 
   const newErrors: Record<string, string> = {};
 
-  if (!formData.fullName.trim()) {
-    newErrors.fullName = 'Full Name is required';
-  }
-
+  // 1. Validation Logic
+  if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
+  
   if (!formData.email.trim()) {
     newErrors.email = 'Email is required';
   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -46,25 +44,29 @@ export const handleRegistrationSubmit = async ({
     return;
   }
 
-  // Save both the email and password so the login form can verify it later
- try {
-
-  const response = await axios.post(
-    "http://localhost:8080/api/auth/signup",
-    {
+  // 2. API Submission
+  try {
+    const response = await axios.post("http://localhost:8080/api/auth/signup", {
       name: formData.fullName,
       email: formData.email,
       password: formData.password,
+    });
+
+    // Assume success
+    setSuccessMessage(response.data.message || "Registration successful! Please log in.");
+    
+  } catch (error) {
+    // 3. Smart Error Handling
+    if (isAxiosError(error) && error.response) {
+      // Server returned an error (e.g., 400 Bad Request or 409 Conflict)
+      setErrors({ 
+        email: error.response.data.message || "Registration failed. Please try again." 
+      });
+    } else {
+      // Network or other unexpected errors
+      setErrors({ 
+        email: "Unable to connect to the server. Please check your network." 
+      });
     }
-  );
-
-  setSuccessMessage(response.data);
-
-} catch (error) {
-
-  setErrors({
-    email: "Signup failed"
-  });
-
-}
+  }
 };

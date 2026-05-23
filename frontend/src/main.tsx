@@ -4,8 +4,15 @@ import "./index.css";
 import App from "./App";
 
 
+import { AppProvider } from "./context/AppContext";
+import { ExpenseProvider } from "./context/ExpenseContext";
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <AppProvider>
+      <ExpenseProvider>
+        <App />
+      </ExpenseProvider>
+    </AppProvider>
   </StrictMode>
 );
