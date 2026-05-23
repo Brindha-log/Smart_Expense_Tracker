@@ -32,39 +32,39 @@ export const handleLoginSubmit = async ({
 
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/auth/login",
+      "https://smart-expense-tracker-youq.onrender.com/api/auth/login",
       {
         email: formData.email,
         password: formData.password,
       }
     );
 
-    
+
     const responseString = String(response.data).toLowerCase();
     if (responseString.includes("invalid") || responseString.includes("not found") || responseString.includes("fail")) {
       setGlobalError(response.data || "Invalid email or password");
-      setSuccessMessage(null); 
-      return; 
+      setSuccessMessage(null);
+      return;
     }
 
     // The backend now returns the JWT token string
     const token = response.data;
     if (typeof token === 'string' && token.length > 50) {
-        localStorage.setItem('jwt_token', token);
-        localStorage.setItem('registeredUser', formData.email); // keep for legacy checks
-        setSuccessMessage(`Login successful! Welcome back.`);
+      localStorage.setItem('jwt_token', token);
+      localStorage.setItem('registeredUser', formData.email); // keep for legacy checks
+      setSuccessMessage(`Login successful! Welcome back.`);
     } else {
-        throw new Error("Invalid token received");
+      throw new Error("Invalid token received");
     }
 
   } catch (error: any) {
-   
+
     setSuccessMessage(null);
 
     if (error.response) {
-    
-      const serverMessage = typeof error.response.data === 'string' 
-        ? error.response.data 
+
+      const serverMessage = typeof error.response.data === 'string'
+        ? error.response.data
         : error.response.data.message || "Invalid credentials";
       setGlobalError(serverMessage);
     } else {

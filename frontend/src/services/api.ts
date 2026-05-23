@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8080/api',
+    baseURL: 'https://smart-expense-tracker-youq.onrender.com/api',
 });
 
 // Add JWT token to every request
@@ -24,7 +24,7 @@ api.interceptors.response.use((response) => {
         localStorage.removeItem('jwt_token');
         localStorage.removeItem('registeredUser');
         localStorage.removeItem('auth_user');
-        
+
         // Only redirect if not already on login/landing
         const currentView = localStorage.getItem('currentAppView');
         if (currentView !== 'login' && currentView !== 'landing' && currentView !== 'register') {

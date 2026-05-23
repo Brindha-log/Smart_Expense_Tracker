@@ -14,7 +14,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174", "http://localhost:5175"})
+@CrossOrigin(origins = {
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "https://smart-expense-tracker-1qvabe3am-brindha-s-projects1.vercel.app"
+})
 public class AuthController {
 
     private final AuthService authService;

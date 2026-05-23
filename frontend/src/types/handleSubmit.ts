@@ -22,7 +22,7 @@ export const handleRegistrationSubmit = async ({
 
   // 1. Validation Logic
   if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
-  
+
   if (!formData.email.trim()) {
     newErrors.email = 'Email is required';
   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -46,7 +46,7 @@ export const handleRegistrationSubmit = async ({
 
   // 2. API Submission
   try {
-    const response = await axios.post("http://localhost:8080/api/auth/signup", {
+    const response = await axios.post("https://smart-expense-tracker-youq.onrender.com/api/auth/signup", {
       name: formData.fullName,
       email: formData.email,
       password: formData.password,
@@ -54,18 +54,18 @@ export const handleRegistrationSubmit = async ({
 
     // Assume success
     setSuccessMessage(response.data.message || "Registration successful! Please log in.");
-    
+
   } catch (error) {
     // 3. Smart Error Handling
     if (isAxiosError(error) && error.response) {
       // Server returned an error (e.g., 400 Bad Request or 409 Conflict)
-      setErrors({ 
-        email: error.response.data.message || "Registration failed. Please try again." 
+      setErrors({
+        email: error.response.data.message || "Registration failed. Please try again."
       });
     } else {
       // Network or other unexpected errors
-      setErrors({ 
-        email: "Unable to connect to the server. Please check your network." 
+      setErrors({
+        email: "Unable to connect to the server. Please check your network."
       });
     }
   }

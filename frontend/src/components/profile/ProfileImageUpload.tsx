@@ -41,7 +41,7 @@ export const ProfileImageUpload: React.FC = () => {
         }
     };
 
-    const imageUrl = user?.profileImage ? `http://localhost:8080${user.profileImage}` : null;
+    const imageUrl = user?.profileImage ? `https://smart-expense-tracker-youq.onrender.com${user.profileImage}` : null;
 
     return (
         <div className="flex flex-col items-center sm:items-start gap-4">
@@ -61,7 +61,7 @@ export const ProfileImageUpload: React.FC = () => {
                     )}
                 </div>
             </div>
-            
+
             <div className="flex flex-col gap-1 items-center sm:items-start">
                 <input
                     type="file"
