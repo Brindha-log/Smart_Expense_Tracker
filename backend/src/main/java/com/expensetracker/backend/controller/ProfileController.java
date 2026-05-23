@@ -21,7 +21,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/profile")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174", "http://localhost:5175"})
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174", "http://localhost:5175","https://*.vercel.app"})
 public class ProfileController {
 
     private final ProfileService profileService;
