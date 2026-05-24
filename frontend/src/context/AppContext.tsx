@@ -3,11 +3,16 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 // Type definitions for our state structures
 export interface UserProfile {
   id: number;
-  name: string;
+  name?: string;
+  fullName?: string;
   email: string;
   avatarUrl?: string;
-  role: string;
-  monthlyIncome: number;
+  role?: string;
+  monthlyIncome?: number;
+  phoneNumber?: string;
+  profileImage?: string;
+  currency?: string;
+  joinedDate?: string;
 }
 
 export interface Transaction {

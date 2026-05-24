@@ -2,13 +2,15 @@ import api from './api';
 
 export interface UserProfile {
     id: number;
-    fullName?: string; // mapping from name
+    fullName?: string;
     name?: string;
     email: string;
     phoneNumber?: string;
     profileImage?: string;
     currency: string;
     joinedDate: string;
+    monthlyIncome?: number;
+    role?: string;
 }
 
 export const profileService = {
