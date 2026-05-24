@@ -56,6 +56,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
   };
 
   const onSubmitLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
     handleLoginSubmit({
       event: e,
       formData,
@@ -71,11 +72,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
             console.error("Failed to load user profile", err);
           }
           setTimeout(() => {
+            setIsLoading(false);
             onLoginSuccess();
           }, 800);
+        } else {
+          setIsLoading(false);
         }
       },
-    });
+    }).catch(() => setIsLoading(false));
   };
 
   const handleSendOtp = async (e: React.FormEvent) => {
@@ -134,7 +138,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
     try {
       await authService.resetPassword(forgotEmail, newPassword, otp);
       setSuccessMessage('Password reset successfully. You can now login.');
-      // Reset all forgot password state
       setForgotEmail('');
       setOtp('');
       setNewPassword('');
@@ -149,7 +152,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
 
   return (
     <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-slate-100">
-      <h2 className="text-2xl font-bold text-slate-900 text-center mb-1">Smart Expense Tracker</h2>
+      <h2 className="text-2xl font-bold text-slate-900 text-center mb-1">SpendWize</h2>
       <p className="text-sm text-slate-500 text-center mb-6">
         {view === 'login' && 'Sign in to manage your finances'}
         {view === 'forgot-email' && 'Reset your password'}
@@ -218,9 +221,17 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
 
           <button
             type="submit"
-            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold p-3 rounded-md text-sm transition-colors mt-2 shadow-sm focus:outline-none cursor-pointer"
+            disabled={isLoading}
+            className="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-70 text-white font-semibold p-3 rounded-md text-sm transition-colors mt-2 shadow-sm focus:outline-none cursor-pointer flex items-center justify-center gap-2"
           >
-            Sign In
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Signing In...
+              </>
+            ) : (
+              'Sign In'
+            )}
           </button>
         </form>
       )}
@@ -241,9 +252,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
           <button
             type="submit"
             disabled={isLoading || cooldown > 0}
-            className="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-semibold p-3 rounded-md text-sm transition-colors mt-2 shadow-sm focus:outline-none cursor-pointer"
+            className="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-semibold p-3 rounded-md text-sm transition-colors mt-2 shadow-sm focus:outline-none cursor-pointer flex items-center justify-center gap-2"
           >
-            {isLoading ? 'Sending...' : cooldown > 0 ? `Wait ${cooldown}s` : 'Send OTP'}
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Sending...
+              </>
+            ) : cooldown > 0 ? `Wait ${cooldown}s` : 'Send OTP'}
           </button>
           <button 
             type="button" 
@@ -272,9 +288,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-semibold p-3 rounded-md text-sm transition-colors mt-2 shadow-sm focus:outline-none cursor-pointer"
+            className="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-semibold p-3 rounded-md text-sm transition-colors mt-2 shadow-sm focus:outline-none cursor-pointer flex items-center justify-center gap-2"
           >
-            {isLoading ? 'Verifying...' : 'Verify OTP'}
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Verifying...
+              </>
+            ) : 'Verify OTP'}
           </button>
           <div className="flex justify-between items-center mt-2 px-1">
             <button 
@@ -334,9 +355,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-semibold p-3 rounded-md text-sm transition-colors mt-2 shadow-sm focus:outline-none cursor-pointer"
+            className="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-semibold p-3 rounded-md text-sm transition-colors mt-2 shadow-sm focus:outline-none cursor-pointer flex items-center justify-center gap-2"
           >
-            {isLoading ? 'Resetting...' : 'Reset Password'}
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Resetting...
+              </>
+            ) : 'Reset Password'}
           </button>
         </form>
       )}

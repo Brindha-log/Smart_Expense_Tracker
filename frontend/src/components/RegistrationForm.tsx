@@ -30,7 +30,7 @@ export const RegistrationForm: React.FC = () => {
 
   return (
     <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-slate-100">
-      <h2 className="text-2xl font-bold text-slate-900 text-center mb-1">Smart Expense Tracker</h2>
+      <h2 className="text-2xl font-bold text-slate-900 text-center mb-1">SpendWize</h2>
       <p className="text-sm text-slate-500 text-center mb-6">Create your fintech account</p>
 
       {successMessage && (

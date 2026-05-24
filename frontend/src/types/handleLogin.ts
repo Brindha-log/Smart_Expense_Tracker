@@ -45,7 +45,11 @@ export const handleLoginSubmit = async ({
     );
 
     const responseString = String(response.data).toLowerCase();
-    if (responseString.includes("invalid") || responseString.includes("not found") || responseString.includes("fail")) {
+    if (
+      responseString.includes("invalid") ||
+      responseString.includes("not found") ||
+      responseString.includes("fail")
+    ) {
       setGlobalError(response.data || "Invalid email or password");
       setSuccessMessage(null);
       return;
