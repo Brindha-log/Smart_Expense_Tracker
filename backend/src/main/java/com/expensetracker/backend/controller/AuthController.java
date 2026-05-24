@@ -14,12 +14,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-(origins = {
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://localhost:5175",
-        "https://*.vercel.app"
-})
 public class AuthController {
 
     private final AuthService authService;
