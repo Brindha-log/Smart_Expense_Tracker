@@ -164,22 +164,22 @@ const App: React.FC = () => {
               {currentView === 'login' ? (
                 <p className="text-sm text-slate-500">
                   Don't have an account?{' '}
-                  <button
-                    onClick={() => setCurrentView('register')}
-                    className="text-slate-900 font-semibold underline bg-transparent border-none p-0 cursor-pointer text-sm"
-                  >
-                    Sign Up
-                  </button>
+                 <button
+    onClick={() => setCurrentView('register')}
+    className="text-blue-400 font-semibold underline bg-transparent border-none p-0 cursor-pointer text-sm"
+>
+    Sign Up
+</button>
                 </p>
               ) : (
                 <p className="text-sm text-slate-500">
                   Already have an account?{' '}
-                  <button
-                    onClick={() => setCurrentView('login')}
-                    className="text-slate-900 font-semibold underline bg-transparent border-none p-0 cursor-pointer text-sm"
-                  >
-                    Sign In
-                  </button>
+                 <button
+    onClick={() => setCurrentView('login')}
+    className="text-blue-400 font-semibold underline bg-transparent border-none p-0 cursor-pointer text-sm"
+>
+    Sign In
+</button>
                 </p>
               )}
             </div>
