@@ -36,9 +36,13 @@ export const handleLoginSubmit = async ({
       {
         email: formData.email,
         password: formData.password,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }
     );
-
 
     const responseString = String(response.data).toLowerCase();
     if (responseString.includes("invalid") || responseString.includes("not found") || responseString.includes("fail")) {
@@ -47,22 +51,18 @@ export const handleLoginSubmit = async ({
       return;
     }
 
-    // The backend now returns the JWT token string
     const token = response.data;
     if (typeof token === 'string' && token.length > 50) {
       localStorage.setItem('jwt_token', token);
-      localStorage.setItem('registeredUser', formData.email); // keep for legacy checks
+      localStorage.setItem('registeredUser', formData.email);
       setSuccessMessage(`Login successful! Welcome back.`);
     } else {
       throw new Error("Invalid token received");
     }
 
   } catch (error: any) {
-
     setSuccessMessage(null);
-
     if (error.response) {
-
       const serverMessage = typeof error.response.data === 'string'
         ? error.response.data
         : error.response.data.message || "Invalid credentials";
