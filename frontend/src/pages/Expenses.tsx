@@ -15,6 +15,7 @@ export const Expenses: React.FC = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [expenseToEdit, setExpenseToEdit] = useState<Expense | null>(null);
+    const [selectedExpenseId, setSelectedExpenseId] = useState<number | null>(null);
 
     // Month filter state — defaults to current month/year
     const now = new Date();
@@ -79,6 +80,7 @@ export const Expenses: React.FC = () => {
         if (!window.confirm("Delete this transaction?")) return;
         try {
             await expenseService.deleteExpense(id);
+            setSelectedExpenseId(null);
             await fetchExpenses();
             if (isFiltering) await fetchFilteredExpenses();
             window.dispatchEvent(new Event('data-updated'));
@@ -107,6 +109,10 @@ export const Expenses: React.FC = () => {
         setFilteredExpenses([]);
         setSelectedMonth(now.getMonth() + 1);
         setSelectedYear(now.getFullYear());
+    };
+
+    const handleRowClick = (id: number) => {
+        setSelectedExpenseId(prev => prev === id ? null : id);
     };
 
     const monthNames = [
@@ -181,38 +187,53 @@ export const Expenses: React.FC = () => {
                     </div>
                 ) : (
                     <div className="space-y-2">
-                        {displayedExpenses.map((expense) => (
-                            <div
-                                key={expense.id}
-                                className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-700 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
-                            >
-                                <div className="flex-1">
-                                    <h3 className="font-semibold text-slate-900 dark:text-white">{expense.title}</h3>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">{expense.category} • {expense.date}</p>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <span className={`text-lg font-bold ${expense.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                                        {expense.type === 'income' ? '+' : '-'}₹{expense.amount.toFixed(2)}
-                                    </span>
-                                    <div className="flex gap-2">
-                                        <Button
-                                            variant="secondary"
-                                            size="sm"
-                                            onClick={() => handleEditClick(expense)}
-                                        >
-                                            Edit
-                                        </Button>
-                                        <Button
-                                            variant="danger"
-                                            size="sm"
-                                            onClick={() => handleDeleteExpense(expense.id)}
-                                        >
-                                            Delete
-                                        </Button>
+                        {displayedExpenses.map((expense) => {
+                            const isSelected = selectedExpenseId === expense.id;
+                            return (
+                                <div
+                                    key={expense.id}
+                                    onClick={() => handleRowClick(expense.id)}
+                                    className={`flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-700 last:border-0 cursor-pointer transition-colors
+                                        ${isSelected
+                                            ? 'bg-blue-50 dark:bg-blue-900/20'
+                                            : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                                        }`}
+                                >
+                                    <div className="flex-1">
+                                        <h3 className="font-semibold text-slate-900 dark:text-white">{expense.title}</h3>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">{expense.category} • {expense.date}</p>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className={`text-lg font-bold ${expense.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                                            {expense.type === 'income' ? '+' : '-'}₹{expense.amount.toFixed(2)}
+                                        </span>
+
+                                        {/* Edit & Delete — only visible when this row is selected */}
+                                        {isSelected && (
+                                            <div
+                                                className="flex gap-2"
+                                                onClick={e => e.stopPropagation()} // prevent row toggle when clicking buttons
+                                            >
+                                                <Button
+                                                    variant="secondary"
+                                                    size="sm"
+                                                    onClick={() => handleEditClick(expense)}
+                                                >
+                                                    Edit
+                                                </Button>
+                                                <Button
+                                                    variant="danger"
+                                                    size="sm"
+                                                    onClick={() => handleDeleteExpense(expense.id)}
+                                                >
+                                                    Delete
+                                                </Button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </Card>
