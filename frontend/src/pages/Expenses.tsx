@@ -17,13 +17,6 @@ export const Expenses: React.FC = () => {
     const [expenseToEdit, setExpenseToEdit] = useState<Expense | null>(null);
     const [selectedExpenseId, setSelectedExpenseId] = useState<number | null>(null);
 
-    // Month filter state — defaults to current month/year
-    const now = new Date();
-    const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1); // 1-12
-    const [selectedYear, setSelectedYear] = useState(now.getFullYear());
-    const [isFiltering, setIsFiltering] = useState(false);
-    const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([]);
-
     const fetchExpenses = useCallback(async () => {
         try {
             const data = await expenseService.getExpensesPage(userId, page, 10);
@@ -34,25 +27,12 @@ export const Expenses: React.FC = () => {
         }
     }, [page, userId]);
 
-    const fetchFilteredExpenses = useCallback(async () => {
-        try {
-            const data = await expenseService.getExpensesByMonth(userId, selectedMonth, selectedYear);
-            setFilteredExpenses(data);
-        } catch (error) {
-            console.error("Filter fetch failed", error);
-        }
-    }, [userId, selectedMonth, selectedYear]);
-
     useEffect(() => {
         fetchExpenses();
         const handleDataUpdate = () => fetchExpenses();
         window.addEventListener('data-updated', handleDataUpdate);
         return () => window.removeEventListener('data-updated', handleDataUpdate);
     }, [fetchExpenses]);
-
-    useEffect(() => {
-        if (isFiltering) fetchFilteredExpenses();
-    }, [isFiltering, fetchFilteredExpenses]);
 
     const handleFormSubmit = async (expenseData: Omit<Expense, 'id' | 'userId'>) => {
         try {
@@ -68,7 +48,6 @@ export const Expenses: React.FC = () => {
             setIsFormOpen(false);
             setExpenseToEdit(null);
             await fetchExpenses();
-            if (isFiltering) await fetchFilteredExpenses();
             window.dispatchEvent(new Event('data-updated'));
         } catch (error) {
             console.error("Save failed", error);
@@ -82,7 +61,6 @@ export const Expenses: React.FC = () => {
             await expenseService.deleteExpense(id);
             setSelectedExpenseId(null);
             await fetchExpenses();
-            if (isFiltering) await fetchFilteredExpenses();
             window.dispatchEvent(new Event('data-updated'));
         } catch (error) {
             console.error("Delete failed", error);
@@ -99,31 +77,9 @@ export const Expenses: React.FC = () => {
         setExpenseToEdit(null);
     };
 
-    const handleApplyFilter = () => {
-        setIsFiltering(true);
-        fetchFilteredExpenses();
-    };
-
-    const handleClearFilter = () => {
-        setIsFiltering(false);
-        setFilteredExpenses([]);
-        setSelectedMonth(now.getMonth() + 1);
-        setSelectedYear(now.getFullYear());
-    };
-
     const handleRowClick = (id: number) => {
         setSelectedExpenseId(prev => prev === id ? null : id);
     };
-
-    const monthNames = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-
-    // Years: current year and 2 years back
-    const years = [now.getFullYear() - 2, now.getFullYear() - 1, now.getFullYear()];
-
-    const displayedExpenses = isFiltering ? filteredExpenses : expenses;
 
     return (
         <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-8">
@@ -140,54 +96,15 @@ export const Expenses: React.FC = () => {
                 </div>
             </div>
 
-            {/* Month Filter Bar */}
-            <div className="flex flex-wrap items-end gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-sm">
-                <div className="flex flex-col gap-1">
-                    <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Month</label>
-                    <select
-                        value={selectedMonth}
-                        onChange={e => setSelectedMonth(Number(e.target.value))}
-                        className="border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none focus:border-blue-500 transition-all"
-                    >
-                        {monthNames.map((m, i) => (
-                            <option key={i + 1} value={i + 1}>{m}</option>
-                        ))}
-                    </select>
-                </div>
-                <div className="flex flex-col gap-1">
-                    <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Year</label>
-                    <select
-                        value={selectedYear}
-                        onChange={e => setSelectedYear(Number(e.target.value))}
-                        className="border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white outline-none focus:border-blue-500 transition-all"
-                    >
-                        {years.map(y => (
-                            <option key={y} value={y}>{y}</option>
-                        ))}
-                    </select>
-                </div>
-                <Button onClick={handleApplyFilter}>Apply Filter</Button>
-                {isFiltering && (
-                    <Button variant="secondary" onClick={handleClearFilter}>Clear Filter</Button>
-                )}
-                {isFiltering && (
-                    <span className="text-sm text-blue-600 dark:text-blue-400 font-medium self-end">
-                        Showing {monthNames[selectedMonth - 1]} {selectedYear} ({filteredExpenses.length} transactions)
-                    </span>
-                )}
-            </div>
-
             {/* Transactions List */}
             <Card>
-                {displayedExpenses.length === 0 ? (
+                {expenses.length === 0 ? (
                     <div className="text-center py-12 text-slate-500">
-                        {isFiltering
-                            ? `No transactions found for ${monthNames[selectedMonth - 1]} ${selectedYear}.`
-                            : 'No transactions found. Add one to get started!'}
+                        No transactions found. Add one to get started!
                     </div>
                 ) : (
                     <div className="space-y-2">
-                        {displayedExpenses.map((expense) => {
+                        {expenses.map((expense) => {
                             const isSelected = selectedExpenseId === expense.id;
                             return (
                                 <div
@@ -208,11 +125,10 @@ export const Expenses: React.FC = () => {
                                             {expense.type === 'income' ? '+' : '-'}₹{expense.amount.toFixed(2)}
                                         </span>
 
-                                        {/* Edit & Delete — only visible when this row is selected */}
                                         {isSelected && (
                                             <div
                                                 className="flex gap-2"
-                                                onClick={e => e.stopPropagation()} // prevent row toggle when clicking buttons
+                                                onClick={e => e.stopPropagation()}
                                             >
                                                 <Button
                                                     variant="secondary"
@@ -238,8 +154,8 @@ export const Expenses: React.FC = () => {
                 )}
             </Card>
 
-            {/* Pagination — only show when not filtering */}
-            {!isFiltering && totalPages > 1 && (
+            {/* Pagination */}
+            {totalPages > 1 && (
                 <div className="flex justify-center gap-2">
                     <Button onClick={() => setPage(Math.max(0, page - 1))} disabled={page === 0}>
                         Previous
