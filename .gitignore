@@ -51,6 +51,7 @@ yarn-error.log*
 
 # Local environment variables (Contains API keys, DB passwords)
 .env
+!.env.example
 .env.local
 .env.development.local
 .env.test.local
